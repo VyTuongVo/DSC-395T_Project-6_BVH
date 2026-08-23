@@ -1,0 +1,11 @@
+BVH_Testing/
+__pycache__/
+*/__pycache__/
+.pytest_cache/
+
+handout/*eps-converted-to.pdf
+handout/*.aux
+handout/*.out
+handout/*.log
+
+.venv
