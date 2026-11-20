@@ -32,3 +32,4 @@ def test_edge_cases():
     origin = (4.5, 0.5)
     direction = Vector2D(0, 1)
     assert t.find_intersection(origin, direction) == (4.5, 0.75)
+

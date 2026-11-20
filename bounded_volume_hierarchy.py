@@ -236,7 +236,59 @@ class BoundedVolumeHierarchy(BVH):
 
     def remove(self, shape: Shape) -> None:
         # TODO: implement
-        raise NotImplementedError
+    #ObjectiveL remove one triangle, then fix the boxes in based on hieght and balancing the tree
+
+        # empty tree -> nothing to do so we return
+        if self._root is None:
+            return
+
+        #create the triangle's box
+        targeted_box = self.box_shape(shape)
+
+        def delete(node):
+            status = False
+            if node.leaves():
+                if node.shape == shape: # if the triangle stored in this leaf the same triange we're trying to remove?
+                    status = True
+                    return None, status
+                return node, status
+
+            #If the traingle's box ins't inside the node's box -> then return false
+            if not (node.box.contains_point(targeted_box.min_pos) and node.box.contains_point(targeted_box.max_pos)):
+                return node, status #return status as false
+
+            #searching between left and right
+
+            #search left
+            new_left, status = delete(node.left)
+            if status:
+                if new_left is None: #if the left child was the removed leaf
+                    return node.right, status
+                node.left = new_left  #other
+
+            #if its not on the leftn it a right search
+            else:
+                new_right, status = delete(node.right)
+                if not status:
+                    return node, status
+                if new_right is None:
+                    return node.left, status
+                node.right = new_right
+
+
+            #fix box and hieght and then rebalance
+            node.box = self.box_combination(node.left.box, node.right.box)
+            node.height = 1 + max(node.left.height, node.right.height)
+            return self.rebalance(node), status
+
+        self._root, status = delete(self._root)
+
+
+
+
+
+
+        #raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Queries
